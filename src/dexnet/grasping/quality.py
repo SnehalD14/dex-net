@@ -30,7 +30,11 @@ try:
 except:
     logging.warning('Failed to import pyhull')
 try:
-    import cvxopt as cvx
+    import cvxopt.solvers as cvx  
+except:
+    logging.warning('Failed to import cvx')
+try:
+    import cvxopt as cvxm
 except:
     logging.warning('Failed to import cvx')
 import os
@@ -52,7 +56,7 @@ except:
 import IPython
 
 # turn off output logging
-cvx.solvers.options['show_progress'] = False
+cvx.options['show_progress'] = False
 
 class PointGraspMetrics3D:
     """ Class to wrap functions for quasistatic point grasp quality metrics.
@@ -654,11 +658,11 @@ class PointGraspMetrics3D:
             h[num_wrenches+i] = force_limit
 
         # convert to cvx and solve
-        P = cvx.matrix(P)
-        q = cvx.matrix(q)
-        G = cvx.matrix(G)
-        h = cvx.matrix(h)
-        sol = cvx.solvers.qp(P, q, G, h)
+        P = cvxm.matrix(P)
+        q = cvxm.matrix(q)
+        G = cvxm.matrix(G)
+        h = cvxm.matrix(h)
+        sol = cvx.qp(P, q, G, h)
         v = np.array(sol['x'])
 
         min_dist = np.linalg.norm(wrench_basis.dot(v).ravel() - target_wrench)**2
@@ -691,14 +695,14 @@ class PointGraspMetrics3D:
         grasp_matrix = G + wrench_regularizer * np.eye(G.shape[0])
 
         # Solve QP to minimize .5 x'Px + q'x subject to Gx <= h, Ax = b
-        P = cvx.matrix(2 * grasp_matrix)   # quadratic cost for Euclidean dist
-        q = cvx.matrix(np.zeros((dim, 1)))
-        G = cvx.matrix(-np.eye(dim))       # greater than zero constraint
-        h = cvx.matrix(np.zeros((dim, 1)))
-        A = cvx.matrix(np.ones((1, dim)))  # sum constraint to enforce convex
-        b = cvx.matrix(np.ones(1))         # combinations of vertices
+        P = cvxm.matrix(2 * grasp_matrix)   # quadratic cost for Euclidean dist
+        q = cvxm.matrix(np.zeros((dim, 1)))
+        G = cvxm.matrix(-np.eye(dim))       # greater than zero constraint
+        h = cvxm.matrix(np.zeros((dim, 1)))
+        A = cvxm.matrix(np.ones((1, dim)))  # sum constraint to enforce convex
+        b = cvxm.matrix(np.ones(1))         # combinations of vertices
 
-        sol = cvx.solvers.qp(P, q, G, h, A, b)
+        sol = cvx.qp(P, q, G, h, A, b)
         v = np.array(sol['x'])
         min_norm = np.sqrt(sol['primal objective'])
 
