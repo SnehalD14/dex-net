@@ -1,3 +1,0 @@
-/home/snehal/catkin_erdal/src/dex-net/deps/SDFGen/build/CMakeFiles/edit_cache.dir
-/home/snehal/catkin_erdal/src/dex-net/deps/SDFGen/build/CMakeFiles/rebuild_cache.dir
-/home/snehal/catkin_erdal/src/dex-net/deps/SDFGen/build/CMakeFiles/SDFGen.dir
